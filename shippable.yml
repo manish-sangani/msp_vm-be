@@ -1,0 +1,57 @@
+# language setting
+language: node_js
+
+# version numbers, testing against two versions of node
+node_js:
+    - 4.4.0
+
+# only build when certain Git branches are updated
+branches:
+  only:
+    - master
+
+# Mongo binds to 127.0.0.1 by default
+services:
+  - mongodb
+
+before_script:
+    - mkdir -p shippable/testresults
+    - mkdir -p shippable/codecoverage
+#    - mkdir -p ~/.aws
+#    - echo '[profile eb-cli]' > ~/.aws/config
+#    - echo "aws_access_key_id = $AWS_ACCESS_KEY_ID" >> ~/.aws/config
+#    - echo "aws_secret_access_key = $AWS_SECRET_ACCESS_KEY" >> ~/.aws/config
+
+script:
+#   - mkdir -p .elasticbeanstalk
+#    - cp config.yml .elasticbeanstalk/
+    - gulp process-scripts
+
+# npm install runs by default, but we need to specify global installs ourselves
+before_install:
+    - npm install -g gulp bower
+#    - SUDO=$(which sudo) && $SUDO pip install awsebcli
+
+# node environment
+env:
+    global:
+ #       - AWS_ACCESS_KEY_ID=AKIAI7SZYW5JWREBFF3A
+#        - AWS_DEFAULT_REGION=us-east-1
+        - MONGOLAB_URI=mongodb://localhost/mspvms
+        - NODE_ENV=dev
+        - secure: bvIC6krSkw/yx0i/TwE/1IGiJg1S6b5Xn+oxYmh72qx3EsVE4ebo3u70m9yUk2guBQoHtGr4J4tS0+O3Ss4bSSyYn3uuBc3I1EvHXN8rgflNjZ38bsSDmuNQ5TwCt2/QuqKlhxejNT4iGAjvA4wQgcS1e4Lw9o5QYo5KyTufnKJcCnlXFK1dt0jqKn7vNAonZVJvfvfLhXBL/NQHrl4H8fMOt7zmn3w0ir3A5T3Nej0UquHC6GjyyXae3Jz70g9vhYl0lLV6sPlSWwCYxcukgFVD14A5LiqFTCIrcAYc9q3arKCvZP28+W9Kmn9lm6EPGNfUEhrD5DGZg25Gi66RIQ==
+        - secure: DnQLLTQXd7YmrkB/6Gh23c9KstlHUFma9SIgUaJlWMEDNmEDniLMJkBN5oX3g0Nq8vR1w4+F8fD0NFHuSumdVFmNdSVSjV9YBhJVb325i9MOiYw2Ro79cXts7nmfY4/oMgPWSAh1G8W6eAbE7hgO7eFjls334bQ0p5EwLFcVs5n/+oreHMSkC/f2E+ogLxMN0FIEtioasrvmwXlR3LVVSR9x+WzftusvHcL9k2QLpOi5v7mzwIfgmKp6M15FXrwbVgxKhmGpA8KiHw2nwYKeZSGW2ec5p2a9V2pkDBmSDbo4tGtLWP3lfFjXx6PNXyHdaRt2uEB0HzG415gCUbDsgA==
+        - CD_APP_NAME=mspvms-dev
+
+notifications:
+    email:
+        recipients:
+            - manish.sangani@prideglobal.com
+        on_success: change
+        on_failure: always
+
+#FOR deployment to HEROKU
+
+after_success:
+#    - eb init && eb deploy
+#- git push git@heroku.com:mspvms-nodejs.git master
